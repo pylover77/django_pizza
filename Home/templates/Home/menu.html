@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block body %}
+<section id="section__four" class="menu">
+    <h1>SivirPizza Cardapio</h1>
+    <p>Trabalhamos apenas com </p>
+    <p>tamanhos unicos de pizza 30cm</p>
+    <div class="pizza__container__box">
+        {% for pizza in pizzas %}
+        <form action="/menu/" method="POST" class="card">
+            {% csrf_token %}
+            <div class="image">
+                <img src="{{pizza.image_url}}" alt="">
+            </div>
+            <div class="pizza__content">
+            <input type="text" id="sno" name="sno" value="{{pizza.sno}}" style="display:none;">
+            <input type="text" id="user_logedin" name="user_logedin"  {% if request.user.is_authenticated %} value= "{{request.user}}" {% endif %} style="display:none;">
+                <h2>{{pizza.Pizza_name}}</h2>
+                <p style="text-align:left;">{{pizza.Pizza_desc}}</p>
+                <div class="price__order__btn__box">
+                    <h4>R${{pizza.Pizza_price}}</h4>
+                    {% if firstobjectofcurrentuser.order_confirmed == False or not firstobjectofcurrentuser %}
+                        <button type="submit">Adicionar</button>
+                    {% else %}
+                        <button type="button" class="btn__none">Adicionar</button>
+                    {% endif %}
+                        
+                </div>
+            </div>
+        </form>
+        {% endfor %}
+    </div>
+    <div class="warning_no_order">
+        <div class="cross3"><i class="fas fa-times closeMenuWarning"></i></div>
+        <h1>Seu pedido está pendente</h1>
+        <h1>Após o envio deste pedido</h1>
+        <h1>Voce poderá fazer outro pedido</h1>
+    </div>
+</section>
+
+<script>
+    const btnNone = document.querySelectorAll(".btn__none");
+    const closeMenuWarning = document.querySelector(".closeMenuWarning");
+    const warningNoOrder = document.querySelector(".warning_no_order");
+    btnNone.forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        warningNoOrder.style.display = "block";
+      });
+    });
+    closeMenuWarning.addEventListener("click", function() {
+      warningNoOrder.style.display = "none";
+    });
+</script>
+
+{% endblock body %}

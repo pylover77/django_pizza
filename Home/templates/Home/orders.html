@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Pedidos{% endblock title %}
+{% block body %}
+<section id="orders">
+    <h1>Pedidos</h1>
+    <div class="table__orders__container">
+        <div class="table__orders">
+            <table>
+                <tr>
+                    <th>Pizza</th>
+                    <th>Descricao</th>
+                    <th>Quantidade</th>
+                    <th>Preco</th>
+                    <th>Cancelar</th>
+                </tr>
+                {% for order in orders  %}
+                <tr>
+                    <td>{{order.Pizza_name}}</td>
+                    <td>{{order.Pizza_desc}}</td>
+                    <td>
+                        <form action="/decreament/" method="POST" class="btn__increament__decreament">
+                            {% csrf_token %}
+                            <input type="text" name="order_Id" , id="order_Id" value="{{order.id}}">
+                            <input type="text" name="Pizza_name_" , id="Pizza_name_" value="{{order.Pizza_name}}">
+                            <button type="submit"><i class="fas fa-minus" aria-hidden="true"></i></button>
+                        </form>
+                        {{order.quantity}}
+                        <form action="/increament/" method="POST" class="btn__increament__decreament">
+                            {% csrf_token %}
+                            <input type="text" name="order_Id" , id="order_Id" value="{{order.id}}">
+                            <input type="text" name="Pizza_name_" , id="Pizza_name_" value="{{order.Pizza_name}}">
+                            <button type="submit"><i class="fas fa-plus" aria-hidden="true"></i></button>
+                        </form>
+                    </td>
+                    <td>R${{order.Pizza_price}}</td>
+                    <td><form action="#">
+                        <input type="text" name="order_Id", id="order_Id" value="{{order.id}}">
+                        <button type="submit"><i class="fas fa-trash-alt" aria-hidden="true"></i> Remover</button>
+                    </form></td>
+
+                </tr>
+                {% endfor %}
+                <tr>
+                    <th>your</th>
+                    <th>total = </th>
+                    <th>$2</th>
+                    <th></th>
+                    <th>
+                        <form action="">
+                            <button type="submit"><i class="fas fa-trash-alt" aria-hidden="true"></i> Cancelar</button>
+                        </form>
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="confirm_orders">
+        <form action="#">
+            <button type="submit"> Concluir Pedido <i class="fas fa-check" aria-hidden="true"></i></button>
+        </form>
+    </div>
+</section>
+
+
+{% endblock body %}
