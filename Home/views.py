@@ -26,18 +26,20 @@ def increament(request):
     if request.method == "POST":
         if 'order_Id' in request.POST:
             order_Id = request.POST['order_Id']
+            pizzaName = request.POST['Pizza_name_']
             order = Orders.objects.filter(id=order_Id)
             order_inst = order.first()
             pizzaPrice = order_inst.Pizza_price
             if order_inst.quantity == 0:
                 order.update(quantity = 1)
-                return redirect("orders")
+                return redirect("/orders/")
             else:
                 order_inst.quantity +=1
                 order.update(quantity = order_inst.quantity)
-                pizzaPrice = round(pizzaPrice * order_inst.quantity, 3)
+                pizza_price = Pizza.objects.filter(Pizza_name = pizzaName).first().Pizza_price
+                pizzaPrice = round(pizza_price * order_inst.quantity, 3)
                 order.update(Pizza_price = pizzaPrice)
-                return redirect("orders")
+                return redirect("/orders/")
                 
 def decreament(request):
     if request.method == "POST":
@@ -51,14 +53,15 @@ def decreament(request):
             if order_inst.quantity == 1:
                 order.update(quantity = 0)
                 order.delete()
-                return redirect("orders")
+                return redirect("/orders/")
             else:
-                order_inst.quantity -= 1
-                order.update(quantity= order_inst.quantity)
-                pizza_price = Pizza.objects.filter(Pizza_name = pizzaName).first().Pizza_price
-                pizzaPrice = round(pizza_price*order_inst.quantity, 3)
-                order.update(Pizza_price = pizzaPrice)
-                return redirect("orders")
+                    order_inst.quantity -= 1
+                    order.update(quantity= order_inst.quantity)
+                    pizza_price = Pizza.objects.filter(Pizza_name = pizzaName).first().Pizza_price
+                    pizzaPrice = round(pizza_price * order_inst.quantity, 3)
+                    order.update(Pizza_price = pizzaPrice)
+                    return redirect("orders")
+
             
             
             
