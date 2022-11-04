@@ -3,6 +3,8 @@
 {% block title %}Pedidos{% endblock title %}
 {% block body %}
 <section id="orders">
+    {% if orders %}
+    {% if firstobjectofcurrentuser.order_confirmed == False  %}
     <h1>Pedidos</h1>
     <div class="table__orders__container">
         <div class="table__orders">
@@ -34,7 +36,8 @@
                         </form>
                     </td>
                     <td>R${{order.Pizza_price}}</td>
-                    <td><form action="#">
+                    <td><form action="/deleteOrder/" method="POST">
+                        {% csrf_token %}
                         <input type="text" name="order_Id", id="order_Id" value="{{order.id}}">
                         <button type="submit"><i class="fas fa-trash-alt" aria-hidden="true"></i> Remover</button>
                     </form></td>
@@ -42,12 +45,13 @@
                 </tr>
                 {% endfor %}
                 <tr>
-                    <th>your</th>
+                    <th>valor</th>
                     <th>total = </th>
-                    <th>$2</th>
+                    <th>R${{totalPrice}}</th>
                     <th></th>
                     <th>
-                        <form action="">
+                        <form action="/deleteAll/" method="POST">
+                            {% csrf_token %}
                             <button type="submit"><i class="fas fa-trash-alt" aria-hidden="true"></i> Cancelar</button>
                         </form>
                     </th>
@@ -56,10 +60,47 @@
         </div>
     </div>
     <div class="confirm_orders">
-        <form action="#">
+        <form action="/orderConfirmed/" method="POST">
+            {% csrf_token %}
             <button type="submit"> Concluir Pedido <i class="fas fa-check" aria-hidden="true"></i></button>
         </form>
     </div>
+    {% else %}
+    <h1 class="confirmed_pay">Seu pedido foi confirmado. O motoboy está a caminho!</h1>
+    <div class="bill_container">
+        <div class="bill_box">
+            <table>
+                <tr>
+                    <th>Pizza</th>
+                    <th>Quantidade</th>
+                    <th>Valor</th>
+                </tr>
+                {% for pizza in orders  %}
+                <tr>
+                    <td>{{pizza.Pizza_name}}</td>
+                    <td>{{pizza.quantity}}</td>
+                    <td>R${{pizza.Pizza_price}}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td>Valor total -> </td>
+                    <td>R${{totalPrice}}</td>
+
+                </tr>
+            </table>
+        </div>
+    </div>
+    <form action="/deleteAll/" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="clean_order"> <i class="fas fa-check" aria-hidden="true"></i>Confirmar Entrega</button>
+        <button type="submit" class="cancel_all_order"><i class="fas fa-times" aria-hidden="true"></i>Cancelar Pedido</button>
+    </form>
+
+    {% endif %}
+    {% else %}
+    <h4>Voce não tem nada no carrinho :/ <a href="/menu/"> Cardapio </a></h4>
+    {% endif %}
 </section>
 
 

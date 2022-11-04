@@ -457,6 +457,20 @@ td {
     margin: 20px 0;
     cursor: pointer;
 }
+
+.clean_order {
+    background: #008000;
+    padding: 10px 20px;
+    color: #f1f1f1;
+    font-weight: bold;
+    font-size: 22px;
+    outline: none;
+    border: none;
+    border-radius: 30px;
+    font-family: "Josefin Sans";
+    margin: 20px 0;
+    cursor: pointer;
+}
 #signup {
     width: 100%;
     min-height: 100vh;
