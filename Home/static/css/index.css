@@ -706,8 +706,8 @@ td {
     display: none;
 }
 #profile .address_upload {
-    width: 400px;
-    height: 270px;
+    width: 500px;
+    height: 250px;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -731,12 +731,15 @@ td {
 }
 #profile .address_upload h1 {
     margin: 10px 0;
+    padding: 10px;
 }
 #profile .address_upload textarea {
-    padding: 10px;
+
+    padding: 40px;
 }
 #profile .address_upload .btn__address {
     width: 100%;
+    padding: 10px;
 }
 #profile .address_upload .btn__address button {
     width: 100%;
