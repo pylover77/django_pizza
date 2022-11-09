@@ -4,7 +4,9 @@ from django.contrib import auth
 from django.shortcuts import redirect
 from django.contrib.auth.models import User, auth,  AnonymousUser
 from django.contrib import messages
-from .models import Pizza, Orders
+from Home.forms import ProfileForm
+from .models import Pizza, Orders, Profile, Address, Contact
+
 # Create your views here.
 def home(request):
     if request.user and request.user != AnonymousUser():
@@ -19,8 +21,7 @@ def home(request):
         totalOrders = sum(totalOrdersList)
     else:
         totalOrders = 0
-    ordersOfCurrentUser = Orders.objects.filter(User=current_user)
-    firstobjectofcurrentuser = ordersOfCurrentUser.first()
+
     #
     context={
     
@@ -30,41 +31,44 @@ def home(request):
 
 def orders(request):
     try:
-        current_username = request.user.username
-        user = User.objects.filter(username=current_username).first()
-        orders = Orders.objects.filter(User=user)
-        price_list = []
-        for order in orders:
-            price_list.append(order.Pizza_price)
-            
-        totalPrice = round(sum(price_list), 3)
-
-            
-        if request.user and request.user != AnonymousUser():
-            current_user = request.user 
-            ordersOfCurrentUser = Orders.objects.filter(User=current_user)
-            
-            totalOrdersList = []
-            for pizzaOrder in ordersOfCurrentUser:
-                quantity = pizzaOrder.quantity
-                totalOrdersList.append(quantity)
+        if request.user:
+            current_username = request.user.username
+            user = User.objects.filter(username=current_username).first()
+            orders = Orders.objects.filter(User=user)
+            price_list = []
+            for order in orders:
+                price_list.append(order.Pizza_price)
                 
-            totalOrders = sum(totalOrdersList)
-        else:
-            totalOrders = 0
-        ordersOfCurrentUser = Orders.objects.filter(User=current_user)
-        firstobjectofcurrentuser = ordersOfCurrentUser.first()
-        #
-        context={
-            'orders':orders,
-            'totalOrders':totalOrders,
-            'totalPrice':totalPrice,
-            'firstobjectofcurrentuser': firstobjectofcurrentuser,
-        }
-        #
+            totalPrice = round(sum(price_list), 3)
+
+                
+            if request.user and request.user != AnonymousUser():
+                current_user = request.user 
+                ordersOfCurrentUser = Orders.objects.filter(User=current_user)
+                
+                totalOrdersList = []
+                for pizzaOrder in ordersOfCurrentUser:
+                    quantity = pizzaOrder.quantity
+                    totalOrdersList.append(quantity)
+                    
+                totalOrders = sum(totalOrdersList)
+            else:
+                totalOrders = 0
+            ordersOfCurrentUser = Orders.objects.filter(User=request.user)
+            firstobjectofcurrentuser = ordersOfCurrentUser.first()
+            #
+            context={
+                'orders':orders,
+                'totalOrders':totalOrders,
+                'totalPrice':totalPrice,
+                'firstobjectofcurrentuser': firstobjectofcurrentuser,
+            }
+            #
+            return render(request, "Home/orders.html", context)
     except Exception:
-        pass
-    return render(request, "Home/orders.html", context)
+        messages.warning(request, 'VC precisa ta logado!')
+        return redirect('login')
+    
     
 def increament(request):
     if request.method == "POST":
@@ -161,16 +165,17 @@ def menu(request):
                             
             except Exception:
                 pass
-            
+        pizzas = Pizza.objects.all()
+        context = {
+            'pizzas':pizzas,
+            'totalOrders': totalOrders,
+            'firstobjectofcurrentuser': firstobjectofcurrentuser,
+        }
+        return render(request, "Home/menu.html", context)        
     except Exception:
-        pass
-    pizzas = Pizza.objects.all()
-    context = {
-        'pizzas':pizzas,
-        'totalOrders': totalOrders,
-        'firstobjectofcurrentuser': firstobjectofcurrentuser,
-    }
-    return render(request, "Home/menu.html", context)
+        messages.warning(request, 'VC precisa ta logado!')
+        return redirect('login')
+    
     
     
 
@@ -239,4 +244,68 @@ def orderConfirmed(request):
     
 
 def profile(request):
-    return render(request, "Home/profile.html")
+    try:
+        if request.user.is_authenticated:
+            current_user = request.user
+            form = ProfileForm(instance=current_user)
+            if request.method == "POST":
+                try:
+                    profile_Image = request.FILES['profile_Image']
+                    profile = Profile(User=current_user, profile_Image=profile_Image)
+                    profile.save()
+                    messages.success(request,"Foto atualizada!!")
+                except Exception:
+                    return redirect("profile")
+                
+            profile_obj = Profile.objects.filter(User=current_user)
+            if profile_obj:
+                profile_image_display= profile_obj.last()
+                profile_image_url = profile_image_display.profile_Image
+            else:
+                profile_image_url = "images/defaultuser.jpg"
+            address = Address.objects.filter(User=current_user).first()
+            if address:
+                address_display = address.address
+            else:
+                address_display = "adicione um endereço !"    
+            context= {
+                'profile_image_url':profile_image_url,
+                'form':form,
+                'address_display':address_display, 
+            }
+            return render(request, "Home/profile.html", context)
+    except Exception:
+        return redirect("profile")
+    
+def address(request):
+    current_user = request.user
+    if request.method == "POST":
+        if 'address_area' in request.POST:
+            address_area = request.POST['address_area']
+            if not Address.objects.filter(User=current_user).first():
+                address = Address(User=current_user, address=address_area)
+                address.save()
+                messages.success(request, "atualizou o endereço *_* ")
+                return redirect('profile')
+            else:
+                address = Address.objects.filter(User=current_user).update(address=address_area)
+                messages.success(request, "atualizou o endereço *_* ")
+                return redirect('profile')
+
+def logout(request):
+    if request.method == "POST":
+        auth.logout(request)
+        messages.warning(request, "Vc foi desconectado")
+        return redirect("login")
+    
+    
+def contact(request):
+    if request.method == "POST":
+        if 'query_details' in request.POST:
+            query_details = request.POST["query_details"]
+            contact = Contact(User=request.user,  query=query_details)
+            contact.save()
+            messages.success(request,"enviado com sucesso")
+    return render(request, "Home/contact.html")
+    
+        

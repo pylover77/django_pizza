@@ -6,38 +6,39 @@
     <div class="profile__contaier">
         <div class="image__box__profile">
             <div class="image__container">
-                <img src="https://avatars.githubusercontent.com/u/47481079?v=4" alt="">
+                <img src="/media/{{profile_image_url}}/" alt="">
                 <div class="edit_image"><i class="fas fa-edit" aria-hidden="true"></i></div>
             </div>
             <div class="details">
-                <h4>NATAN</h4>
-                <h4>Admin</h4>
-                <h4>criarviewpraisso@gmail.com</h4>
-                <form action="#" method="POST">
+                <h4>Nome -> {{request.user.first_name}} {{request.user.last_name}} </h4>
+                <h4>Usuario -> {{request.user.username}} </h4>
+                <h4>Email -> {{request.user.email}} </h4>
+                <form action="/logout/" method="POST">
                     {% csrf_token %}
                     <button type="submit">Desconectar</button>
                 </form>
             </div>
             <div class="address">
                 <div>
-                    <h4>(Endereco)</h4>
-                    <p>JuizdeFora <i class="fas fa-edit address_edit" aria-hidden="true"></i></p>
+                    <h4>Endereço:</h4>
+                    <p>{{address_display}} <i class="fas fa-edit address_edit" aria-hidden="true"></i></p>
                 </div>
             </div>
         </div>
     </div>
 <div class="upload_image_form">
-    <form action="#" method="POST" class="image_form">
+    <form action="/profile/" method="POST" class="image_form" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="cross"> <i class="fas fa-times closeImageForm" aria-hidden="true"></i></div>
         <div class="image_btns">
             <h3>Editar foto de Perfil</h3>
+            {{form.as_p}}
             <button type="submit">Enviar</button>
         </div>
     </form>
 </div>
 <div class="address_upload">
-    <form action="#" method="POST"></form>
+    <form action="/address/" method="POST">
         {% csrf_token %}
         <div class="cross2"><i class="fas fa-times closeAddressForm" aria-hidden="true"></i></div>
         <h1>Editar Endereco</h1>

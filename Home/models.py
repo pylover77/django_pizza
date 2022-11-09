@@ -30,3 +30,17 @@ class Profile(models.Model):
     def __str__(self):
         return self.User.username
      
+class Address(models.Model):
+    User = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True )
+    address = models.CharField(max_length=150)
+    
+    def __str__(self):
+        return self.User.username
+
+class Contact(models.Model):
+    User = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True )
+    query = models.TextField()
+    
+    def __str__(self):
+        return self.User.username
+    

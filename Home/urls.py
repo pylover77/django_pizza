@@ -13,4 +13,8 @@ urlpatterns = [
     path('deleteAll/', views.deleteAll, name="deleteAll" ),
     path('orderConfirmed/', views.orderConfirmed, name="orderConfirmed" ),
     path('profile/', views.profile, name="profile"),
+    path('address/', views.address, name="address"),
+    path('logout/', views.logout, name="logout"),
+    
+    path('contact/', views.contact, name="contact"),
 ]
