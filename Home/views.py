@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User, auth,  AnonymousUser
 from django.contrib import messages
 from Home.forms import ProfileForm
+from django.utils import translation
 from .models import Pizza, Orders, Profile, Address, Contact
 
 # Create your views here.
@@ -245,6 +246,22 @@ def orderConfirmed(request):
 
 def profile(request):
     try:
+        try:
+            if request.user and request.user != AnonymousUser():
+                current_user = request.user 
+                ordersOfCurrentUser = Orders.objects.filter(User=current_user)
+                
+                totalOrdersList = []
+                for pizzaOrder in ordersOfCurrentUser:
+                    quantity = pizzaOrder.quantity
+                    totalOrdersList.append(quantity)
+                
+                totalOrders = sum(totalOrdersList)
+            else:
+                totalOrders = 0
+        except Exception:
+            pass
+
         if request.user.is_authenticated:
             current_user = request.user
             form = ProfileForm(instance=current_user)
@@ -271,7 +288,8 @@ def profile(request):
             context= {
                 'profile_image_url':profile_image_url,
                 'form':form,
-                'address_display':address_display, 
+                'address_display':address_display,
+                'totalOrders':totalOrders,
             }
             return render(request, "Home/profile.html", context)
     except Exception:
@@ -306,6 +324,25 @@ def contact(request):
             contact = Contact(User=request.user,  query=query_details)
             contact.save()
             messages.success(request,"enviado com sucesso")
-    return render(request, "Home/contact.html")
-    
+    try:
+        if request.user and request.user != AnonymousUser():
+            current_user = request.user 
+            ordersOfCurrentUser = Orders.objects.filter(User=current_user)
         
+            totalOrdersList = []
+            for pizzaOrder in ordersOfCurrentUser:
+                quantity = pizzaOrder.quantity
+                totalOrdersList.append(quantity)
+        
+            totalOrders = sum(totalOrdersList)
+        else:
+            totalOrders = 0
+    except Exception:
+        pass
+    context={
+    'totalOrders':totalOrders,
+}
+    return render(request, "Home/contact.html", context)
+    
+
+
